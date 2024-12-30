@@ -5,7 +5,7 @@ plugins {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 tasks.jar {
-    archiveFileName.set("demo-plugin.zip")
+    archiveFileName.set("parchement.zip")
 }
 
 tasks.register('runMCreatorWithPlugin', JavaExec) {

@@ -1,14 +1,14 @@
 {
-  "id": "demo_plugin",
+  "id": "parchment",
   "supportedversions": [
-    202400199999,
-    2024001
+    202400499999,
+    2024004
   ],
   "weight": 0,
   "info": {
-    "name": "MCreator demo plugin",
+    "name": "MCreator Parchment",
     "version": "1.0",
-    "description": "Demo plugin to demonstrate a typical plugin structure",
-    "author": "Pylo"
+    "description": "Add Parchment to your mod",
+    "author": "cdc12345"
   }
 }
