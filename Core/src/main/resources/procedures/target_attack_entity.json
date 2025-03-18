@@ -1,0 +1,47 @@
+{
+  "args0": [
+    {
+      "type": "field_checkbox",
+      "name": "insight",
+      "checked": false
+    },
+    {
+      "type": "field_checkbox",
+      "name": "nearby",
+      "checked": false
+    },
+    {
+      "type": "field_data_list_selector",
+      "name": "entity",
+      "datalist": "entity",
+      "testValue": "EntityCreeper"
+    },
+    {
+      "type": "input_value",
+      "name": "priority",
+      "check": "Number"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 250,
+  "mcreator": {
+    "toolbox_id": "targets",
+    "toolbox_init": [
+      "<value name=\"priority\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value>"
+    ],
+    "inputs": ["priority"],
+    "fields": [
+      "entity",
+      "insight",
+      "nearby"
+    ],
+    "dependencies": [
+      {
+        "name": "targetSelector",
+        "type": "object"
+      }
+    ]
+  }
+}

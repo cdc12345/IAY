@@ -1,0 +1,20 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "object",
+      "check": "Object"
+    }
+  ],
+  "inputsInline": true,
+  "output": "String",
+  "colour": "%{BKY_TEXTS_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "unsafe",
+    "toolbox_init": [
+      "<value name=\"object\"><block type=\"object_iterator\"></block></value>"
+    ],
+    "inputs": ["object"]
+  }
+}

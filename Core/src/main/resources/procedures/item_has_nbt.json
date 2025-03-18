@@ -1,0 +1,26 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "item",
+      "check": "MCItem"
+    },
+    {
+      "type": "input_value",
+      "name": "name",
+      "check": "String"
+    }
+  ],
+  "inputsInline": true,
+  "output": "Boolean",
+  "colour": "%{BKY_LOGIC_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "itemdata",
+    "toolbox_init": [
+      "<value name=\"item\"><block type=\"itemstack_to_mcitem\"></block></value>",
+      "<value name=\"name\"><block type=\"text\"><field name=\"TEXT\">entity_catcher</field></block></value>"
+    ],
+    "inputs": ["item","name"]
+  }
+}

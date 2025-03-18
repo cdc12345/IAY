@@ -1,0 +1,18 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "key",
+      "check": "AtomicNumber"
+    }
+  ],
+  "inputsInline": true,
+  "output": "Number",
+  "colour": "230",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "math",
+    "toolbox_init": [],
+    "inputs": ["key"]
+  }
+}

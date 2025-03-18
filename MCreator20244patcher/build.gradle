@@ -1,0 +1,62 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group = 'org.liquid'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.gradle.org/gradle/libs-releases" } // for gradle-tooling-api
+    flatDir { dirs mcreator_path + '/lib' }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    api project(':MCreator')
+
+    project(":MCreator").configurations.named("implementation").get().dependencies.each {
+            //noinspection ForeignDelegate
+            api it
+    }
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+processResources {
+    eachFile { details ->
+        if (details.name == "plugin.json") { // or whatever pattern/criteria is appropriate
+            details.filter ReplaceTokens, tokens: [
+                    "mainPlugins.version": version,
+                    "minMCr"             : minMCr,
+                    "maxMCr"             : maxMCr
+            ], beginToken: "{", endToken: "}"
+        }
+    }
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    archiveFileName.set("mcreatorPatch.zip")
+
+    manifest{
+        attributes("Can-Redefine-Classes": true,
+                "Can-Retransform-Classes": true,
+                "Premain-Class": "org.cdc.liberate.AgentMain")
+    }
+
+    doLast {
+        copy {
+            from 'build/libs/mcreatorPatch.zip'
+            into mcreator_plugin_path
+        }
+    }
+}

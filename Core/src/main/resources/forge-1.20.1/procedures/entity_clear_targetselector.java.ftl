@@ -1,0 +1,1 @@
+targetSelector.removeAllGoals(a->true);

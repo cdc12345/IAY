@@ -1,0 +1,17 @@
+{
+  "dependencies_provided": [
+    {
+      "name": "item",
+      "type": "itemstack"
+    },
+    {
+      "name": "fuel",
+      "type": "itemstack"
+    },
+    {
+      "name": "littime",
+      "type": "number"
+    }
+  ],
+  "cancelable": "true"
+}

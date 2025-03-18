@@ -1,0 +1,13 @@
+templates:
+  - template: strpacket/stringpacket.java.ftl
+    condition: group%=StringPacket
+    name: "@SRCROOT/@BASEPACKAGEPATH/network/StringPacket.java"
+  - template: strpacket/stringpacketevent.java.ftl
+    condition: group%=StringPacket
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/StringPacketEvent.java"
+  - template: strpacket/targetfilterevent.java.ftl
+    condition: group%=TargetFilterEvent
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/TargetFilterEvent.java"
+  - template: strpacket/furnacecanburnevent.java.ftl
+    condition: group%=FurnaceCanBurnEvent
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/FurnaceCanBurnEvent.java"

@@ -1,0 +1,15 @@
+{
+  "id": "java_home_fixer",
+  "supportedversions": [
+    {maxMCr},
+    {minMCr}
+  ],
+  "weight": 0,
+  "javaplugin": "org.cdc.forceJ.JavaHomeFixer",
+  "info": {
+    "name": "JavaHome fixer",
+    "version": "{mainPlugins.version}",
+    "description": "JavaHome fixer",
+    "author": "cdc12345"
+  }
+}

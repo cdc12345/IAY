@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="E:/gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/6d1c8bf4c28e697f472a83bd6add76ec4951734/mixin-0.8.5-processor.jar" />
+        </processorPath>
+        <module name="miao.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Core" target="21" />
+      <module name="DemoPlugin" target="21" />
+      <module name="DemoPlugin.Main" target="21" />
+      <module name="DemoPlugin.main" target="21" />
+      <module name="DemoPlugin.Main.main" target="21" />
+      <module name="DemoPlugin.Main.test" target="21" />
+      <module name="DemoPlugin.MCreator" target="21" />
+      <module name="DemoPlugin.MCreator.main" target="21" />
+      <module name="DemoPlugin.MCreator.test" target="21" />
+      <module name="DemoPlugin.Mixin-MCreator" target="21" />
+      <module name="DemoPlugin.Mixin-MCreator.main" target="21" />
+      <module name="DemoPlugin.Mixin-MCreator.test" target="21" />
+      <module name="DemoPlugin.test" target="21" />
+      <module name="IAmYou.main" target="21" />
+      <module name="IAmYou.Main.main" target="21" />
+      <module name="IAmYou.Main.test" target="21" />
+      <module name="IAmYou.MCreatorTestUnit.main" target="21" />
+      <module name="IAmYou.MCreatorTestUnit.test" target="21" />
+      <module name="JavaHomeFixer" target="21" />
+      <module name="JavaHomeFixer.Liberate" target="21" />
+      <module name="JavaHomeFixer.Liberate.main" target="21" />
+      <module name="JavaHomeFixer.Liberate.test" target="21" />
+      <module name="JavaHomeFixer.main" target="21" />
+      <module name="JavaHomeFixer.MCreator" target="21" />
+      <module name="JavaHomeFixer.MCreator.main" target="21" />
+      <module name="JavaHomeFixer.MCreator.test" target="21" />
+      <module name="JavaHomeFixer.test" target="21" />
+      <module name="Liberate" target="21" />
+      <module name="Liberate.main" target="21" />
+      <module name="Liberate.MCreator" target="21" />
+      <module name="Liberate.MCreator.main" target="21" />
+      <module name="Liberate.MCreator.test" target="21" />
+      <module name="Liberate.test" target="21" />
+      <module name="Main-1.20.1" target="21" />
+      <module name="neoforgetest1" target="21" />
+      <module name="neoforgetest1.main" target="21" />
+      <module name="neoforgetest1.test" target="21" />
+      <module name="org.liquid.IAmYou.Main.test" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -1,0 +1,15 @@
+_default:
+  - Level.OVERWORLD
+  - "minecraft:overworld"
+_mcreator_map_template:
+  - "ResourceKey.create(Registries.DIMENSION, new ResourceLocation(\"@modid:@registryname\"))"
+  - "@modid:@registryname"
+主世界:
+  - Level.OVERWORLD
+  - "minecraft:overworld"
+下界:
+  - Level.NETHER
+  - "minecraft:the_nether"
+末地:
+  - Level.END
+  - "minecraft:the_end"

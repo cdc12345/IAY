@@ -1,0 +1,26 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "locked",
+      "check": "Boolean"
+    }
+  ],
+  "colour": 35,
+  "previousStatement": null,
+  "nextStatement": null,
+  "inputsInline": true,
+  "mcreator": {
+    "toolbox_id": "worldmanagement",
+    "inputs": ["locked"],
+    "toolbox_init": [
+      "<value name=\"locked\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value>"
+    ],
+    "dependencies": [
+      {
+        "name": "world",
+        "type": "world"
+      }
+    ]
+  }
+}

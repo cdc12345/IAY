@@ -1,0 +1,67 @@
+{
+  "args0": [
+    {
+      "type": "field_checkbox",
+      "name": "insight",
+      "checked": false
+    },
+    {
+      "type": "field_checkbox",
+      "name": "nearby",
+      "checked": false
+    },
+    {
+      "type": "field_data_list_selector",
+      "name": "entity",
+      "datalist": "entity",
+      "testValue": "EntityCreeper"
+    },
+    {
+      "type": "input_value",
+      "name": "_placeholder",
+      "check": "Entity"
+    },
+    {
+      "type": "input_statement",
+      "name": "filter"
+    },
+    {
+      "type": "input_value",
+      "name": "priority",
+      "check": "Number"
+    }
+  ],
+  "extensions": [
+    "is_custom_loop"
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 250,
+  "mcreator": {
+    "toolbox_id": "targets",
+    "inputs": ["priority"],
+    "fields": ["entity", "insight", "nearby"],
+    "toolbox_init": [
+      "<value name=\"_placeholder\"><block deletable=\"false\" movable=\"false\" enabled=\"false\" type=\"entity_iterator\"></block></value>",
+      "<value name=\"priority\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value>"
+    ],
+    "statements": [
+      {
+        "name": "filter",
+        "provides": [
+          {
+            "name": "entityiterator",
+            "type": "entity"
+          }
+        ]
+      }
+    ],
+    "dependencies": [
+      {
+        "name": "targetSelector",
+        "type": "object"
+      }
+    ]
+  }
+}

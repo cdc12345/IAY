@@ -1,0 +1,17 @@
+{
+  "dependencies_provided": [
+    {
+      "name": "tabname",
+      "type": "string"
+    },
+    {
+      "name": "itemstack",
+      "type": "itemstack"
+    },
+    {
+      "name": "world",
+      "type": "world"
+    }
+  ],
+  "side": "client"
+}

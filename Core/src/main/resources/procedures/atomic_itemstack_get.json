@@ -1,0 +1,18 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "key",
+      "check": "AtomicItemStack"
+    }
+  ],
+  "inputsInline": true,
+  "output": "MCItem",
+  "colour": "350",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "mcelements",
+    "toolbox_init": [],
+    "inputs": ["key"]
+  }
+}

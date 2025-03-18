@@ -1,0 +1,1 @@
+(${input$item}.hasTag() && ${input$item}.getOrCreateTag().contains(${input$name}))

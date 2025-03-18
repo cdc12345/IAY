@@ -1,0 +1,1 @@
+${JavaModName}.PACKET_HANDLER.sendToServer(new StringPacket(${input$msg}));
