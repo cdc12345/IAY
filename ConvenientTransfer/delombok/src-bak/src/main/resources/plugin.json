@@ -1,0 +1,17 @@
+{
+  "id": "convenienttransfer",
+  "supportedversions": [
+    {maxMCr},
+    {minMCr},
+    "2024002",
+    "20240029999"
+  ],
+  "weight": 0,
+  "javaplugin": "org.liquid.convenient.TransferMain",
+  "info": {
+    "name": "CT",
+    "version": "{mainPlugins.version}",
+    "description": "Random",
+    "author": "liquid"
+  }
+}

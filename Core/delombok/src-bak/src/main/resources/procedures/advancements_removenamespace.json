@@ -1,0 +1,29 @@
+{
+	"args0": [
+		{
+			"type": "input_value",
+			"name": "namespace",
+			"check": "String"
+		}
+	],
+	"inputsInline": true,
+	"previousStatement": null,
+	"nextStatement": null,
+	"colour": "251",
+	"mcreator": {
+		"group": "name",
+		"toolbox_id": "unsafe",
+		"toolbox_init": [
+			"<value name=\"namespace\"><block type=\"text\"><field name=\"TEXT\">minecraft</field></block></value>"
+		],
+		"inputs": [
+			"namespace"
+		],
+		"dependencies": [
+			{
+				"name": "world",
+				"type": "world"
+			}
+		]
+	}
+}

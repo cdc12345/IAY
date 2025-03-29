@@ -1,0 +1,5 @@
+_default: setWalkingSpeed
+WalkingSpeed: setWalkingSpeed
+FlyingSpeed: setFlyingSpeed
+行走速度: setWalkingSpeed
+飞行速度: setFlyingSpeed

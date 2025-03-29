@@ -1,0 +1,45 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "entity",
+      "check": "Entity"
+    },
+    {
+      "type": "input_value",
+      "name": "_placeholder",
+      "check": "Object"
+    },
+    {
+      "type": "input_statement",
+      "name": "foreach"
+    }
+  ],
+  "extensions": [
+    "is_custom_loop"
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 195,
+  "mcreator": {
+    "group": "iterator",
+    "toolbox_id": "entitydata",
+    "toolbox_init": [
+      "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>",
+      "<value name=\"_placeholder\"><block deletable=\"false\" movable=\"true\" enabled=\"false\" type=\"object_iterator\"></block></value>"
+    ],
+    "inputs": ["entity"],
+    "statements": [
+      {
+        "name": "foreach",
+        "provides": [
+          {
+            "name": "objectiterator",
+            "type": "object"
+          }
+        ]
+      }
+    ]
+  }
+}

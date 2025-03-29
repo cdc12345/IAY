@@ -1,0 +1,1 @@
+(${input$object} instanceof MobEffect mobEffect?ForgeRegistries.MOB_EFFECTS.getKey(mobEffect).getNamespace():"")

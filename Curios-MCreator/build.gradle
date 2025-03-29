@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group = 'org.liquid'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.gradle.org/gradle/libs-releases" } // for gradle-tooling-api
+    flatDir { dirs mcreator_path + '/lib' }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    api project(':MCreator')
+
+    project(':MCreator').afterEvaluate(() ->
+            project(":MCreator").configurations.named("implementation").get().dependencies.each {
+                //noinspection ForeignDelegate
+                api it
+            }
+    )
+}
+
+import org.apache.tools.ant.filters.*
+
+processResources {
+    eachFile { details ->
+        if (details.name == "plugin.json") { // or whatever pattern/criteria is appropriate
+            details.filter ReplaceTokens, tokens: [
+                    "mainPlugins.version": version,
+                    "minMCr"             : minMCr,
+                    "maxMCr"             : maxMCr
+            ], beginToken: "{", endToken: "}"
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    archiveFileName.set("curios.zip")
+    doLast {
+        copy {
+            from 'build/libs/curios.zip'
+            into mcreator_plugin_path
+        }
+    }
+}

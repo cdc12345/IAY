@@ -1,0 +1,21 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "title",
+      "check": "String"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_TEXTS_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "advanced",
+    "toolbox_init": [
+      "<value name=\"title\"><block type=\"text\"><field name=\"TEXT\">Minecraft</field></block></value>"
+    ],
+    "inputs": ["title"]
+  }
+}

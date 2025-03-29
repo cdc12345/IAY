@@ -1,0 +1,15 @@
+{
+  "id": "iamyou",
+  "supportedversions": [
+    {maxMCr},
+    {minMCr}
+  ],
+  "weight": 0,
+  "javaplugin": "org.cdc.imy.IMYMain",
+  "info": {
+    "name": "IKYW",
+    "version": "{mainPlugins.version}",
+    "description": "Random",
+    "author": "cdc12345"
+  }
+}

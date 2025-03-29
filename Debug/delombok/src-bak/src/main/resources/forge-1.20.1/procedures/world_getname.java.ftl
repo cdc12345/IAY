@@ -1,0 +1,1 @@
+(world instanceof ServerLevel serverLevel)?((ServerLevelData)serverLevel.getLevelData()).getLevelName():""

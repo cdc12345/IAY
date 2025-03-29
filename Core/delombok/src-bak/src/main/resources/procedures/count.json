@@ -1,0 +1,13 @@
+{
+  "output": "Number",
+  "colour": 230,
+  "mcreator": {
+    "toolbox_id": "advanced",
+    "dependencies": [
+      {
+        "name": "count",
+        "type": "number"
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "curios_api_plugin",
+  "weight": 10,
+  "javaplugin": "net.nerdypuzzle.curios.Launcher",
+  "supportedversions": [
+    {maxMCr},
+    {minMCr}
+  ],
+  "info": {
+    "name": "Curios API Plugin",
+    "version": "{mainPlugins.version}",
+    "description": "Adds Curios API support to MCreator",
+    "author": "NerdyPuzzle"
+  }
+}

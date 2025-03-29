@@ -1,0 +1,1 @@
+${input$item}.getOrCreateTag().get(${input$name}) instanceof CompoundTag catcher?catcher.get("id").getAsString():""

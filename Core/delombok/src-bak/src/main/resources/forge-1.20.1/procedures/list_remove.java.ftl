@@ -1,0 +1,1 @@
+${input$list}.remove(${input$value});

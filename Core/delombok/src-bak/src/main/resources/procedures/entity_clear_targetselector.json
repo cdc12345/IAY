@@ -1,0 +1,15 @@
+{
+  "colour": "250",
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "mcreator": {
+    "toolbox_id": "targets",
+    "dependencies": [
+      {
+        "name": "targetSelector",
+        "type": "object"
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.liquid'
+version = 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    archiveFileName.set("generator-1.20.1.zip")
+    if (override_generator){
+        doLast {
+            copy {
+                from 'build/libs/generator-1.20.1.zip'
+                into mcreator_plugin_path
+            }
+        }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    gradle.taskGraph.allTasks.each {
+        if (it == compileJava){
+            it.onlyIf {false}
+        }
+    }
+}

@@ -1,0 +1,3 @@
+atomicnumber: AtomicDouble
+atomicitemstack: AtomicReference<ItemStack>
+list: List<String>

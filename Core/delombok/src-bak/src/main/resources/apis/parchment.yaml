@@ -1,0 +1,14 @@
+---
+neoforge-1.21.1:
+  gradle: |
+    neoForge {
+
+        parchment {
+            minecraftVersion = "1.21.1"
+            mappingsVersion = "2024.11.13"
+        }
+    }
+  update_files:
+    - ~
+
+name: "Parchment"

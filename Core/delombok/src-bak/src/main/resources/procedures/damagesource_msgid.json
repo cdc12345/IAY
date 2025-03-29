@@ -1,0 +1,20 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "key",
+      "check": "DamageSource"
+    }
+  ],
+  "inputsInline": true,
+  "output": "String",
+  "colour": "%{BKY_TEXTS_HUE}",
+  "mcreator": {
+    "group": "name",
+    "toolbox_id": "damagesources",
+    "toolbox_init": [
+      "<value name=\"key\"><block type=\"damagesource_from_deps\"></block></value>"
+    ],
+    "inputs": ["key"]
+  }
+}

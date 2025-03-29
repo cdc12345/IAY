@@ -1,0 +1,13 @@
+{
+  "output": "Object",
+  "colour": 20,
+  "mcreator": {
+    "toolbox_id": "unknown",
+    "dependencies": [
+      {
+        "name": "targetSelector",
+        "type": "object"
+      }
+    ]
+  }
+}

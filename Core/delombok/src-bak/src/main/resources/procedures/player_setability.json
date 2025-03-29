@@ -1,0 +1,34 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "player",
+      "check": "Entity"
+    },
+    {
+      "type": "field_data_list_selector",
+      "name": "abilityName",
+      "datalist": "abilities",
+      "customEntryProviders": "ability"
+    },
+    {
+      "type": "input_value",
+      "name": "value",
+      "check": "Number"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "%{BKY_TEXTS_HUE}",
+  "mcreator": {
+    "group": "player",
+    "toolbox_id": "playermanagement",
+    "toolbox_init": [
+      "<value name=\"player\"><block type=\"entity_from_deps\"></block></value>",
+      "<value name=\"value\"><block type=\"math_number\"><field name=\"NUM\">0.1</field></block></value>"
+    ],
+    "inputs": ["player","value"],
+    "fields": ["abilityName"]
+  }
+}
