@@ -1,4 +1,8 @@
 {
+  "colour": 195,
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
   "args0": [
     {
       "type": "input_value",
@@ -18,10 +22,6 @@
   "extensions": [
     "is_custom_loop"
   ],
-  "inputsInline": true,
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 195,
   "mcreator": {
     "group": "iterator",
     "toolbox_id": "entitydata",
@@ -29,7 +29,9 @@
       "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>",
       "<value name=\"_placeholder\"><block deletable=\"false\" movable=\"true\" enabled=\"false\" type=\"object_iterator\"></block></value>"
     ],
-    "inputs": ["entity"],
+    "inputs": [
+      "entity"
+    ],
     "statements": [
       {
         "name": "foreach",

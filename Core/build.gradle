@@ -25,6 +25,8 @@ dependencies {
                 api it
             }
     )
+
+    api project(":DataGen")
 }
 
 test {

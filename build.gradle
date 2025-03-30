@@ -11,6 +11,7 @@ repositories {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 dependencies {
+
 }
 
 gradle.taskGraph.whenReady {

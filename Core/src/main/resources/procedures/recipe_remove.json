@@ -1,4 +1,8 @@
 {
+  "colour": 251,
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
   "args0": [
     {
       "type": "input_value",
@@ -6,10 +10,6 @@
       "check": "String"
     }
   ],
-  "inputsInline": true,
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": "251",
   "mcreator": {
     "group": "name",
     "toolbox_id": "unsafe",

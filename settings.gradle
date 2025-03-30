@@ -11,4 +11,5 @@ include 'Curios-MCreator'
 include 'JavaHomeEditor'
 include 'MCreator20244patcher'
 include 'ConvenientTransfer'
+include 'DataGen'
 
