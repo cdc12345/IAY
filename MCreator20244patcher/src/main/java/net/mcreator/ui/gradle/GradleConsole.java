@@ -763,7 +763,7 @@ public class GradleConsole extends JPanel {
 	}
 
 	public boolean isGradleSetupTaskRunning() {
-		return gradleSetupTaskRunning;
+		return false;
 	}
 
 	public void cancelTask() {

@@ -16,12 +16,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 public class MCreatorPluginMain extends JavaPlugin {
-    
+
+    private final boolean noSense = true;
+
     public MCreatorPluginMain(Plugin plugin) {
         super(plugin);
         final var liberate = Liberate.getInstance();
@@ -36,7 +37,7 @@ public class MCreatorPluginMain extends JavaPlugin {
                             Path mcreatorBat = Path.of(MetaData.LAUNCHER_FILE_NAME);
                             Path mcreatorABat = Path.of(MetaData.PURE_LAUNCHER_FILE_NAME);
                             Files.copy(Objects.requireNonNull(PluginLoader.INSTANCE.getResourceAsStream(MetaData.PURE_LAUNCHER_FILE_NAME)), mcreatorABat, StandardCopyOption.REPLACE_EXISTING);
-                            Files.copy(Objects.requireNonNull(PluginLoader.INSTANCE.getResourceAsStream(MetaData.CONFIGURATION_FILE_NAME)), mcreatorBat,StandardCopyOption.REPLACE_EXISTING);
+                            Files.copy(Objects.requireNonNull(PluginLoader.INSTANCE.getResourceAsStream(MetaData.CONFIGURATION_FILE_NAME)), mcreatorBat, StandardCopyOption.REPLACE_EXISTING);
                             //Files.copy(plugin.getFile().toPath(),Path.of("agent.jar"), StandardCopyOption.REPLACE_EXISTING);
                             Path configFile = Path.of(MetaData.CONFIGURATION_FILE_NAME);
                             if (!Files.exists(configFile))
@@ -45,7 +46,8 @@ public class MCreatorPluginMain extends JavaPlugin {
                             DesktopUtils.openSafe(mcreatorBat.toFile());
                             System.exit(-1);
                         }
-                    } catch (Exception ignore) {}
+                    } catch (Exception ignore) {
+                    }
                 });
             } else {
                 liberate.getMcreatorPluginLogger().warn("Running in not supported system,sleep!");

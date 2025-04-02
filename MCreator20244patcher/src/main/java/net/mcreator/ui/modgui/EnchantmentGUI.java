@@ -136,7 +136,7 @@ public class EnchantmentGUI extends ModElementGUI<Enchantment> {
         selp.add(damageModifier);
 
         selp.add(HelpUtils.wrapWithHelpButton(this.withEntry("enchantment/damage_modifier"),
-                new JLabel("DamageBonus")));
+                L10N.label("elementgui.enchantment.damage_bonus")));
         selp.add(damageBonus);
 
         selp.add(HelpUtils.wrapWithHelpButton(this.withEntry("enchantment/treasure_enchantment"),

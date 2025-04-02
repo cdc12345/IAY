@@ -13,3 +13,6 @@ include 'MCreator20244patcher'
 include 'ConvenientTransfer'
 include 'DataGen'
 
+include ":Fountain"
+project(":Fountain").projectDir = file(fountain_path)
+
