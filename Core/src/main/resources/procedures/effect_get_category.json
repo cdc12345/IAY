@@ -1,0 +1,28 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "key",
+      "check": "Object"
+    },
+    {
+      "type": "field_data_list_selector",
+      "name": "value",
+      "datalist": "effect_categories",
+      "testValue": "NEUTRAL"
+    }
+  ],
+  "output": "String",
+  "inputsInline": true,
+  "colour": "%{BKY_TEXTS_HUE}",
+  "mcreator": {
+    "toolbox_id": "entitydata",
+    "group": "name",
+    "inputs": [
+      "key"
+    ],
+    "fields": [
+      "value"
+    ]
+  }
+}

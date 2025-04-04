@@ -6,6 +6,5 @@ public class DebugGenerator {
 
     public static void main(String[] args) {
         MCreatorPluginFactory pluginFactory = MCreatorPluginFactory.createFactory("Debug/src/main/resources");
-
     }
 }

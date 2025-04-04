@@ -1,0 +1,1 @@
+(((MobEffect)${input$key}).getCategory().name().equals("{field$value}"))
