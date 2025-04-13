@@ -1,8 +1,10 @@
 {
   "id": "convenienttransfer",
   "supportedversions": [
+    "2025001",
     {maxMCr},
     {minMCr},
+    "2024003",
     "2024002",
     "20240029999"
   ],

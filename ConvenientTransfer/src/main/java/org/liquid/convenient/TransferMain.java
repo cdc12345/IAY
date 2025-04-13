@@ -45,7 +45,7 @@ public class TransferMain extends JavaPlugin {
             var bar = mcreator.getMainMenuBar();
 
             JMenu transfer = new JMenu();
-            transfer.setText("Tool");
+            transfer.setText("Transfer");
             //shallow copy
             JMenuItem toSerializable = buildShallowCopyMenu(mcreator);
             JMenuItem replaceSelectedElement = buildSelectToReplace(mcreator);
@@ -180,7 +180,8 @@ public class TransferMain extends JavaPlugin {
                 generatableElement.setModElement(element);
                 manager.storeModElement(generatableElement);
 
-                JOptionPane.showMessageDialog(workspacePanel, element.getName() + ":" + json);
+                String view = (json.length()>20)?json.substring(0,20)+"....":json;
+                JOptionPane.showMessageDialog(workspacePanel, element.getName() + ":" + view);
 
                 LOG.info("{}:{}", element.getName(), json);
             }
@@ -190,6 +191,7 @@ public class TransferMain extends JavaPlugin {
 
     private JMenuItem buildUnpackMenu(MCreator mcreator) {
         JMenuItem replaceSelectedElement = new JMenuItem(L10N.t("mainbar.menu.pastetocreate"));
+        replaceSelectedElement.setToolTipText(L10N.t("mainbar.menu.pastetocreate.tooltip"));
         replaceSelectedElement.addActionListener(b -> {
             if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
                 var manager = mcreator.getModElementManager();
@@ -267,9 +269,8 @@ public class TransferMain extends JavaPlugin {
                 mcreator.reloadWorkspaceTabContents();
 
 
-                JOptionPane.showMessageDialog(workspacePanel, jsonElements);
-
-                LOG.info(jsonElements.toString());
+                String view = (jsonElements.toString().length()>20)?jsonElements.toString().substring(0,20)+"....":jsonElements.toString();
+                JOptionPane.showMessageDialog(workspacePanel, view);
             }
         });
         return replaceSelectedElement;
@@ -278,6 +279,7 @@ public class TransferMain extends JavaPlugin {
     //Copy
     private JMenuItem buildShallowCopyMenu(MCreator mcreator) {
         JMenuItem toSerializable = new JMenuItem(L10N.t("mainbar.menu.copyselected"));
+        toSerializable.setToolTipText(L10N.t("mainbar.menu.copyselected.tooltip"));
         toSerializable.addActionListener(b -> {
             if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
                 ModElement element = (ModElement) workspacePanel.list.getSelectedValue();
@@ -297,7 +299,8 @@ public class TransferMain extends JavaPlugin {
 
                 JsonArray result = new JsonArray();
                 result.add(gson.fromJson(json, JsonObject.class));
-                JOptionPane.showMessageDialog(workspacePanel, element.getName() + ":" + result);
+                String view = (result.toString().length()>20)?result.toString().substring(0,20)+"....":result.toString();
+                JOptionPane.showMessageDialog(workspacePanel, element.getName() + ":" + view);
 
                 byte[] compressed;
                 try {
@@ -318,6 +321,7 @@ public class TransferMain extends JavaPlugin {
 
     private JMenuItem buildDeepCopyMenu(MCreator mcreator) {
         JMenuItem toSerializable = new JMenuItem(L10N.t("mainbar.menu.copyselectedmultiple"));
+        toSerializable.setToolTipText(L10N.t("mainbar.menu.copyselectedmultiple.tooltip"));
         toSerializable.addActionListener(b -> {
             if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
                 List<IElement> elements = workspacePanel.list.getSelectedValuesList();
@@ -354,7 +358,8 @@ public class TransferMain extends JavaPlugin {
                         jsonElements.add(jsonObject);
                     }
                 }
-                JOptionPane.showMessageDialog(workspacePanel, jsonElements);
+                String view = (jsonElements.toString().length()>20)?jsonElements.toString().substring(0,20)+"....":jsonElements.toString();
+                JOptionPane.showMessageDialog(workspacePanel, view);
 
                 byte[] compressed;
                 try {
