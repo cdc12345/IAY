@@ -16,6 +16,7 @@ import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.IElement;
 import net.mcreator.workspace.elements.ModElement;
+import net.mcreator.workspace.elements.ModElementManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.liquid.convenient.render.TilesModListRender;
@@ -27,7 +28,8 @@ import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -35,400 +37,450 @@ import java.util.Map;
 public class TransferMain extends JavaPlugin {
 
 	public static final Logger LOG = LogManager.getLogger("TransferMain");
+	private static final Gson GSON = new Gson();
+	private static final int PREVIEW_LENGTH = 20;
 
 	private JsonObject descMap = new JsonObject();
 
 	public TransferMain(Plugin plugin) {
 		super(plugin);
+		initializeMenu();
+		initializeComments();
+	}
 
-		this.addListener(MCreatorLoadedEvent.class, a -> {
-			var mcreator = a.getMCreator();
-			var bar = mcreator.getMainMenuBar();
+	private void initializeMenu() {
+		this.addListener(MCreatorLoadedEvent.class, event -> {
+			MCreator mcreator = event.getMCreator();
+			JMenuBar bar = mcreator.getMainMenuBar();
 
-			JMenu transfer = new JMenu();
-			transfer.setText("Transfer");
-			//shallow copy
-			JMenuItem toSerializable = buildShallowCopyMenu(mcreator);
-			JMenuItem replaceSelectedElement = buildSelectToReplace(mcreator);
-			//Deep Copy
-			JMenuItem multipleToSerializable = buildDeepCopyMenu(mcreator);
-			JMenuItem create = buildUnpackMenu(mcreator);
-			//Comment
-			JMenuItem setComment = buildAddCommentMenu(mcreator);
+			JMenu transfer = new JMenu("Transfer");
 
-			//Language Support
-			JMenuItem language = new JMenuItem(L10N.t("mainbar.menu.fromjsontolangall"));
-			language.addActionListener(b -> {
-				String str = JOptionPane.showInputDialog("Input Json Lang");
-				if (str == null) {
-					return;
-				}
-				JsonObject lang = new Gson().fromJson(str, JsonObject.class);
-
-				for (Map.Entry<String, JsonElement> entry : lang.entrySet()) {
-					mcreator.getWorkspace().setLocalization(entry.getKey(), entry.getValue().getAsString());
-				}
-			});
-			JMenuItem language1 = new JMenuItem(L10N.t("mainbar.menu.loadjsontospecificlang"));
-			language1.addActionListener(b -> {
-				String selected = JOptionPane.showInputDialog("Input Lang");
-				String str = JOptionPane.showInputDialog("Input Json Lang");
-				if (str == null || selected == null) {
-					return;
-				}
-				JsonObject lang = new Gson().fromJson(str, JsonObject.class);
-				var map = mcreator.getWorkspace().getLanguageMap().get(selected);
-				LOG.info("Target:{}", selected);
-
-				for (Map.Entry<String, JsonElement> entry : lang.entrySet()) {
-					map.put(entry.getKey(), entry.getValue().getAsString());
-				}
-			});
-			//Register
-			transfer.add(toSerializable);
-			transfer.add(replaceSelectedElement);
+			// Copy operations
+			transfer.add(buildShallowCopyMenu(mcreator));
+			transfer.add(buildSelectToReplace(mcreator));
 			transfer.addSeparator();
-			transfer.add(multipleToSerializable);
-			transfer.add(create);
+			transfer.add(buildDeepCopyMenu(mcreator));
+			transfer.add(buildUnpackMenu(mcreator));
 			transfer.addSeparator();
-			transfer.add(setComment);
-			transfer.add(language);
-			transfer.add(language1);
+
+			// Comment and language operations
+			transfer.add(buildAddCommentMenu(mcreator));
+			transfer.add(buildLanguageMenu(mcreator, false));
+			transfer.add(buildLanguageMenu(mcreator, true));
+
 			bar.add(transfer);
 		});
+	}
 
-		this.addListener(MCreatorLoadedEvent.class, a -> {
-			var mcreator = a.getMCreator();
-			File comments = new File(mcreator.getWorkspaceFolder(), "comments.json");
-			descMap = new JsonObject();
-			try {
-				this.descMap = new Gson().fromJson(new FileReader(comments), JsonObject.class);
-			} catch (FileNotFoundException ignored) {
+	private void initializeComments() {
+		this.addListener(MCreatorLoadedEvent.class, event -> {
+			MCreator mcreator = event.getMCreator();
+			Path commentsPath = new File(mcreator.getWorkspaceFolder(), "comments.json").toPath();
+
+			try (Reader reader = Files.newBufferedReader(commentsPath)) {
+				this.descMap = GSON.fromJson(reader, JsonObject.class);
+			} catch (IOException e) {
+				this.descMap = new JsonObject();
 			}
+
 			if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-				workspacePanel.list.addListSelectionListener(
-						b -> TilesModListRender.updateRenderer(mcreator, TransferMain.this));
+				workspacePanel.list.addListSelectionListener(e -> TilesModListRender.updateRenderer(mcreator, this));
 				TilesModListRender.updateRenderer(mcreator, this);
 			}
 		});
 	}
 
-	//paste
-	private JMenuItem buildSelectToReplace(MCreator mcreator) {
-		JMenuItem deserializer = new JMenuItem(L10N.t("mainbar.menu.pastereplace"));
-		deserializer.addActionListener(b -> {
-			if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-				ModElement element = (ModElement) workspacePanel.list.getSelectedValue();
+	private JMenuItem buildLanguageMenu(MCreator mcreator, boolean specificLang) {
+		String key = specificLang ? "mainbar.menu.loadjsontospecificlang" : "mainbar.menu.fromjsontolangall";
+		JMenuItem menuItem = new JMenuItem(L10N.t(key));
 
-				if (element == null) {
-					JOptionPane.showMessageDialog(mcreator, L10N.t("common.tip.notselected"));
-					return;
+		menuItem.addActionListener(e -> {
+			String langKey = specificLang ? JOptionPane.showInputDialog("Input Lang") : null;
+			String jsonInput = JOptionPane.showInputDialog("Input Json Lang");
+
+			if (jsonInput == null || (specificLang && langKey == null)) {
+				return;
+			}
+
+			try {
+				JsonObject lang = GSON.fromJson(jsonInput, JsonObject.class);
+				Map<String, String> targetMap = specificLang ?
+						mcreator.getWorkspace().getLanguageMap().get(langKey) :
+						mcreator.getWorkspace().getLanguageMap().get("en_us");
+
+				lang.entrySet().forEach(entry -> targetMap.put(entry.getKey(), entry.getValue().getAsString()));
+
+				if (specificLang) {
+					LOG.info("Updated language: {}", langKey);
 				}
-
-				var manager = element.getModElementManager();
-
-				String input = JOptionPane.showInputDialog("Input your element base64");
-
-				byte[] raw = Base64.getDecoder().decode(input.getBytes(StandardCharsets.UTF_8));
-
-				String json;
-				try {
-					json = new String(JsonUtils.uncompress(raw));
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-
-				Gson gson = new Gson();
-				JsonArray array = new JsonArray();
-				try {
-					array = gson.fromJson(json, JsonArray.class);
-				} catch (Exception ignored) {
-					array.add(gson.fromJson(json, JsonObject.class));
-				}
-
-				if (array == null) {
-					JOptionPane.showMessageDialog(workspacePanel, "Invalid Element");
-					return;
-				}
-				GeneratableElement generatableElement;
-				JsonObject object = array.get(0).getAsJsonObject();
-				if (JsonUtils.isRegularPack(object)) {
-					generatableElement = manager.fromJSONtoGeneratableElement(
-							JsonUtils.unmap(array.get(0).getAsJsonObject().get("content").getAsJsonObject())
-									.getAsString(), element);
-					if (generatableElement == null) {
-						generatableElement = element.getGeneratableElement();
-					}
-				} else {
-					generatableElement = manager.fromJSONtoGeneratableElement(array.get(0).toString(), element);
-				}
-				if (generatableElement == null) {
-					JOptionPane.showMessageDialog(mcreator, "Invalid Element");
-					LOG.warn("generatableElement == null");
-					return;
-				}
-
-				if (object.has("code")) {
-					element.setCodeLock(true);
-					List<File> modElementFiles = mcreator.getGenerator()
-							.getModElementGeneratorTemplatesList(generatableElement).stream()
-							.map(GeneratorTemplate::getFile).toList();
-
-					CodeCleanup codeCleanup = new CodeCleanup();
-					String code = object.get("code").getAsString();
-					code = codeCleanup.reformatTheCodeAndOrganiseImports(mcreator.getWorkspace(), code);
-					File modElementFile = modElementFiles.getFirst();
-					try {
-						Files.copy(new ByteArrayInputStream(code.getBytes(StandardCharsets.UTF_8)),
-								modElementFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-					} catch (IOException ignored) {
-					}
-				}
-				generatableElement.setModElement(element);
-				manager.storeModElement(generatableElement);
-
-				String view = (json.length() > 20) ? json.substring(0, 20) + "...." : json;
-				JOptionPane.showMessageDialog(workspacePanel, element.getName() + ":" + view);
-
-				LOG.info("{}:{}", element.getName(), json);
+			} catch (JsonSyntaxException ex) {
+				showError(mcreator, "Invalid JSON format");
+				LOG.error("Failed to parse language JSON", ex);
 			}
 		});
-		return deserializer;
+
+		return menuItem;
+	}
+
+	private JMenuItem buildSelectToReplace(MCreator mcreator) {
+		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.pastereplace"));
+
+		menuItem.addActionListener(e -> {
+			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
+				return;
+			}
+
+			ModElement element = getSelectedModElement(workspacePanel);
+			if (element == null) {
+				showError(mcreator, L10N.t("common.tip.notselected"));
+				return;
+			}
+
+			try {
+				String input = getBase64Input();
+				if (input == null)
+					return;
+
+				JsonArray elements = parseInputToJsonArray(input);
+				if (elements == null || elements.isEmpty()) {
+					showError(workspacePanel, "Invalid Element");
+					return;
+				}
+
+				processElementReplacement(mcreator, element, elements.get(0).getAsJsonObject());
+			} catch (Exception ex) {
+				handleProcessingError(workspacePanel, ex);
+			}
+		});
+
+		return menuItem;
 	}
 
 	private JMenuItem buildUnpackMenu(MCreator mcreator) {
-		JMenuItem replaceSelectedElement = new JMenuItem(L10N.t("mainbar.menu.pastetocreate"));
-		replaceSelectedElement.setToolTipText(L10N.t("mainbar.menu.pastetocreate.tooltip"));
-		replaceSelectedElement.addActionListener(b -> {
-			if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-				var manager = mcreator.getModElementManager();
-				String input = JOptionPane.showInputDialog("Input your element base64");
-				var gson = new Gson();
-				JsonArray jsonElements;
-				byte[] raw = Base64.getDecoder().decode(input.getBytes(StandardCharsets.UTF_8));
-				String json;
-				try {
-					json = new String(JsonUtils.uncompress(raw));
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-				try {
-					jsonElements = gson.fromJson(json, JsonArray.class);
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(workspacePanel, "Invalid Element:" + e.getMessage());
-					e.printStackTrace();
+		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.pastetocreate"));
+		menuItem.setToolTipText(L10N.t("mainbar.menu.pastetocreate.tooltip"));
+
+		menuItem.addActionListener(e -> {
+			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
+				return;
+			}
+
+			try {
+				String input = getBase64Input();
+				if (input == null)
+					return;
+
+				JsonArray elements = parseInputToJsonArray(input);
+				if (elements == null) {
+					showError(workspacePanel, "Invalid Element");
 					return;
 				}
 
-				if (jsonElements == null) {
-					JOptionPane.showMessageDialog(workspacePanel, "Invalid Element");
-					return;
-				}
-
-				for (JsonElement jsonElement : jsonElements) {
-					var object = JsonUtils.unmap(jsonElement.getAsJsonObject());
-					var elementJson = JsonUtils.unmap(
-							gson.fromJson(object.get("content").getAsString(), JsonObject.class));
-					if (!JsonUtils.isRegularPack(object)) {
-						JOptionPane.showMessageDialog(workspacePanel, "Invalid Element:" + object);
-						continue;
-					}
-					String name = object.get("name").getAsString();
-					String type1;
-					if (object.has("type")) {
-						type1 = object.get("type").getAsString();
-					} else {
-						type1 = elementJson.get("_type").getAsString();
-					}
-					var type = ModElementTypeLoader.getModElementType(type1);
-					var modElement = new ModElement(mcreator.getWorkspace(), name, type);
-					GeneratableElement generatableElement = manager.fromJSONtoGeneratableElement(elementJson.toString(),
-							modElement);
-					if (object.has("code")) {
-						if (generatableElement == null)
-							generatableElement = modElement.getGeneratableElement();
-						modElement.setCodeLock(true);
-						List<File> modElementFiles = mcreator.getGenerator()
-								.getModElementGeneratorTemplatesList(generatableElement).stream()
-								.map(GeneratorTemplate::getFile).toList();
-
-						CodeCleanup codeCleanup = new CodeCleanup();
-						String code = object.get("code").getAsString();
-						code = codeCleanup.reformatTheCodeAndOrganiseImports(mcreator.getWorkspace(), code);
-						File modElementFile = modElementFiles.getFirst();
-						try {
-							if (!modElementFile.getParentFile().exists()) {
-								if (!modElementFile.getParentFile().mkdirs()) {
-									LOG.error("Dir failed");
-								}
-							}
-							Files.copy(new ByteArrayInputStream(code.getBytes(StandardCharsets.UTF_8)),
-									modElementFile.toPath());
-						} catch (IOException ignored) {
-						}
-
-					}
-
-					if (generatableElement == null) {
-						JOptionPane.showMessageDialog(mcreator, "Invalid Element");
-						return;
-					}
-					mcreator.getWorkspace().addModElement(modElement);
-					generatableElement.setModElement(modElement);
-					manager.storeModElement(generatableElement);
-
-				}
-				mcreator.reloadWorkspaceTabContents();
-				RegenerateCodeAction.regenerateCode(mcreator, false, false);
-
-				String view = (jsonElements.toString().length() > 20) ?
-						jsonElements.toString().substring(0, 20) + "...." :
-						jsonElements.toString();
-				JOptionPane.showMessageDialog(workspacePanel, view);
+				processMultipleElementsCreation(mcreator, elements);
+				showPreview(workspacePanel, elements.toString());
+			} catch (Exception ex) {
+				handleProcessingError(workspacePanel, ex);
 			}
 		});
-		return replaceSelectedElement;
+
+		return menuItem;
 	}
 
-	//Copy
 	private JMenuItem buildShallowCopyMenu(MCreator mcreator) {
-		JMenuItem toSerializable = new JMenuItem(L10N.t("mainbar.menu.copyselected"));
-		toSerializable.setToolTipText(L10N.t("mainbar.menu.copyselected.tooltip"));
-		toSerializable.addActionListener(b -> {
-			if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-				ModElement element = (ModElement) workspacePanel.list.getSelectedValue();
+		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.copyselected"));
+		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselected.tooltip"));
 
-				if (element == null) {
-					JOptionPane.showMessageDialog(workspacePanel, L10N.t("common.tip.notselected"));
-					return;
-				}
+		menuItem.addActionListener(e -> {
+			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
+				return;
+			}
 
-				Gson gson = new Gson();
+			ModElement element = getSelectedModElement(workspacePanel);
+			if (element == null) {
+				showError(workspacePanel, L10N.t("common.tip.notselected"));
+				return;
+			}
+
+			try {
 				String json = mcreator.getWorkspace().getModElementManager()
 						.generatableElementToJSON(element.getGeneratableElement());
 
 				if (json == null || element.getGeneratableElement() instanceof CustomElement) {
-					JOptionPane.showMessageDialog(workspacePanel, "Invalid Element");
+					showError(workspacePanel, "Invalid Element");
 					return;
 				}
 
 				JsonArray result = new JsonArray();
-				result.add(JsonUtils.map(gson.fromJson(json, JsonObject.class)));
-				String view = (result.toString().length() > 20) ?
-						result.toString().substring(0, 20) + "...." :
-						result.toString();
-				JOptionPane.showMessageDialog(workspacePanel, element.getName() + ":" + view);
+				result.add(JsonUtils.map(GSON.fromJson(json, JsonObject.class)));
 
-				byte[] compressed;
-				try {
-					compressed = JsonUtils.compress(result.toString(), JsonUtils.GZIP_ENCODE_UTF_8);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-				String base64 = Base64.getEncoder().encodeToString(compressed);
-
-				LOG.info("{}:{}", element.getName(), result.toString());
-
-				StringSelection stringSelection = new StringSelection(base64);
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, stringSelection);
+				showPreview(workspacePanel, element.getName(), result.toString());
+				copyToClipboard(compressToBase64(result.toString()));
+				LOG.info("{}:{}", element.getName(), result);
+			} catch (Exception ex) {
+				handleProcessingError(workspacePanel, ex);
 			}
 		});
-		return toSerializable;
+
+		return menuItem;
 	}
 
 	private JMenuItem buildDeepCopyMenu(MCreator mcreator) {
-		JMenuItem toSerializable = new JMenuItem(L10N.t("mainbar.menu.copyselectedmultiple"));
-		toSerializable.setToolTipText(L10N.t("mainbar.menu.copyselectedmultiple.tooltip"));
-		toSerializable.addActionListener(b -> {
-			if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-				List<IElement> elements = workspacePanel.list.getSelectedValuesList();
+		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.copyselectedmultiple"));
+		menuItem.setToolTipText(L10N.t("mainbar.menu.copyselectedmultiple.tooltip"));
 
-				if (elements == null || elements.isEmpty()) {
-					JOptionPane.showMessageDialog(mcreator, L10N.t("common.tip.notselected"));
-					return;
-				}
-				JsonArray jsonElements = new JsonArray();
+		menuItem.addActionListener(e -> {
+			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
+				return;
+			}
 
-				for (IElement element : elements) {
-					if (element instanceof ModElement element1) {
-						JsonObject jsonObject = new JsonObject();
-						JsonObject elementContent = new Gson().fromJson(mcreator.getWorkspace().getModElementManager()
-								.generatableElementToJSON(element1.getGeneratableElement()), JsonObject.class);
-						jsonObject.add("name", new JsonPrimitive(element.getName()));
-						String type = element1.getType().getRegistryName();
-						if (!elementContent.has("_type")) {
-							jsonObject.add("type", new JsonPrimitive(type));
-						}
-						if (List.of("code", "mixin").contains(type)) {
-							List<File> modElementFiles = mcreator.getGenerator()
-									.getModElementGeneratorTemplatesList(element1.getGeneratableElement()).stream()
-									.map(GeneratorTemplate::getFile).toList();
+			List<IElement> elements = workspacePanel.list.getSelectedValuesList();
+			if (elements == null || elements.isEmpty()) {
+				showError(mcreator, L10N.t("common.tip.notselected"));
+				return;
+			}
 
-							File modElementFile = modElementFiles.getFirst();
-
-							String code;
-							try {
-								code = new String(Files.readAllBytes(modElementFile.toPath()));
-								code = ImportFormat.removeImports(code, "");
-							} catch (IOException e) {
-								throw new RuntimeException(e);
-							}
-							jsonObject.add("code", new JsonPrimitive(code));
-						}
-						jsonObject.add("content", new JsonPrimitive(JsonUtils.map(elementContent).toString()));
-						jsonElements.add(JsonUtils.map(jsonObject));
-					}
-				}
-				String view = (jsonElements.toString().length() > 20) ?
-						jsonElements.toString().substring(0, 20) + "...." :
-						jsonElements.toString();
-				JOptionPane.showMessageDialog(workspacePanel, view);
-
-				byte[] compressed;
-				try {
-					compressed = JsonUtils.compress(jsonElements.toString(), null);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-				String base64 = Base64.getEncoder().encodeToString(compressed);
-
+			try {
+				JsonArray jsonElements = createJsonForElements(mcreator, elements);
+				showPreview(workspacePanel, jsonElements.toString());
+				copyToClipboard(compressToBase64(jsonElements.toString()));
 				LOG.info(jsonElements.toString());
-
-				StringSelection stringSelection = new StringSelection(base64);
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, stringSelection);
+			} catch (Exception ex) {
+				handleProcessingError(workspacePanel, ex);
 			}
 		});
-		return toSerializable;
+
+		return menuItem;
 	}
 
-	//More
 	private JMenuItem buildAddCommentMenu(MCreator mcreator) {
-		JMenuItem comment = new JMenuItem(L10N.t("mainbar.menu.addcomment"));
-		comment.addActionListener(a -> {
-			String comment1 = JOptionPane.showInputDialog("Input your comment");
-			if (mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel) {
-				IElement element = workspacePanel.list.getSelectedValue();
-				if (element instanceof ModElement modElement) {
-					descMap.add(modElement.getName(), new JsonPrimitive(comment1));
-					workspacePanel.list.setCellRenderer(new TilesModListRender(this));
-					File comments = new File(mcreator.getWorkspaceFolder(), "comments.json");
-					try {
-						Files.copy(new ByteArrayInputStream(descMap.toString().getBytes(StandardCharsets.UTF_8)),
-								comments.toPath(), StandardCopyOption.REPLACE_EXISTING);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				}
+		JMenuItem menuItem = new JMenuItem(L10N.t("mainbar.menu.addcomment"));
+
+		menuItem.addActionListener(e -> {
+			if (!(mcreator.workspaceTab.getContent() instanceof WorkspacePanel workspacePanel)) {
+				return;
+			}
+
+			IElement element = workspacePanel.list.getSelectedValue();
+			if (!(element instanceof ModElement modElement)) {
+				return;
+			}
+
+			String comment = JOptionPane.showInputDialog("Input your comment");
+			if (comment == null || comment.trim().isEmpty()) {
+				return;
+			}
+
+			descMap.add(modElement.getName(), new JsonPrimitive(comment));
+			workspacePanel.list.setCellRenderer(new TilesModListRender(this));
+
+			try {
+				Files.writeString(new File(mcreator.getWorkspaceFolder(), "comments.json").toPath(), descMap.toString(),
+						StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+			} catch (IOException ex) {
+				LOG.error("Failed to save comments", ex);
+				throw new RuntimeException(ex);
 			}
 		});
-		return comment;
+
+		return menuItem;
+	}
+
+	// Helper methods
+	private ModElement getSelectedModElement(WorkspacePanel panel) {
+		Object selected = panel.list.getSelectedValue();
+		return selected instanceof ModElement ? (ModElement) selected : null;
+	}
+
+	private String getBase64Input() {
+		return JOptionPane.showInputDialog("Input your element base64");
+	}
+
+	private JsonArray parseInputToJsonArray(String input) throws IOException {
+		byte[] raw = Base64.getDecoder().decode(input.getBytes(StandardCharsets.UTF_8));
+		String json = new String(JsonUtils.uncompress(raw));
+
+		try {
+			return GSON.fromJson(json, JsonArray.class);
+		} catch (JsonSyntaxException e) {
+			JsonArray array = new JsonArray();
+			array.add(GSON.fromJson(json, JsonObject.class));
+			return array;
+		}
+	}
+
+	private void processElementReplacement(MCreator mcreator, ModElement element, JsonObject object) {
+		var manager = element.getModElementManager();
+		GeneratableElement generatableElement = createGeneratableElement(manager, element, object);
+
+		if (generatableElement == null) {
+			showError(mcreator, "Invalid Element");
+			LOG.warn("generatableElement == null");
+			return;
+		}
+
+		if (object.has("code")) {
+			processCodeElement(mcreator, element, generatableElement, object.get("code").getAsString());
+		}
+
+		generatableElement.setModElement(element);
+		manager.storeModElement(generatableElement);
+	}
+
+	private GeneratableElement createGeneratableElement(ModElementManager manager, ModElement element,
+			JsonObject object) {
+		if (JsonUtils.isRegularPack(object)) {
+			JsonObject content = JsonUtils.unmap(object.get("content").getAsJsonObject());
+			return manager.fromJSONtoGeneratableElement(content.toString(), element);
+		}
+		return manager.fromJSONtoGeneratableElement(object.toString(), element);
+	}
+
+	private void processCodeElement(MCreator mcreator, ModElement element, GeneratableElement generatableElement,
+			String code) {
+		element.setCodeLock(true);
+		List<File> modElementFiles = mcreator.getGenerator().getModElementGeneratorTemplatesList(generatableElement)
+				.stream().map(GeneratorTemplate::getFile).toList();
+
+		CodeCleanup codeCleanup = new CodeCleanup();
+		code = codeCleanup.reformatTheCodeAndOrganiseImports(mcreator.getWorkspace(), code);
+
+		try {
+			Files.writeString(modElementFiles.getFirst().toPath(), code, StandardCharsets.UTF_8,
+					StandardOpenOption.WRITE);
+		} catch (IOException ex) {
+			LOG.error("Failed to write code file", ex);
+		}
+	}
+
+	private void processMultipleElementsCreation(MCreator mcreator, JsonArray jsonElements) {
+		var manager = mcreator.getModElementManager();
+
+		for (JsonElement jsonElement : jsonElements) {
+			JsonObject object = JsonUtils.unmap(jsonElement.getAsJsonObject());
+			JsonObject elementJson = JsonUtils.unmap(
+					GSON.fromJson(object.get("content").getAsString(), JsonObject.class));
+
+			if (!JsonUtils.isRegularPack(object)) {
+				LOG.warn("Invalid Element: {}", object);
+				continue;
+			}
+
+			String name = object.get("name").getAsString();
+			String type = object.has("type") ?
+					object.get("type").getAsString() :
+					elementJson.get("_type").getAsString();
+
+			ModElement modElement = new ModElement(mcreator.getWorkspace(), name,
+					ModElementTypeLoader.getModElementType(type));
+
+			GeneratableElement generatableElement = manager.fromJSONtoGeneratableElement(elementJson.toString(),
+					modElement);
+
+			if (object.has("code")) {
+				generatableElement =
+						generatableElement != null ? generatableElement : modElement.getGeneratableElement();
+				processCodeElementForCreation(mcreator, modElement, generatableElement,
+						object.get("code").getAsString());
+			}
+
+			if (generatableElement == null) {
+				showError(mcreator, "Invalid Element");
+				return;
+			}
+
+			mcreator.getWorkspace().addModElement(modElement);
+			generatableElement.setModElement(modElement);
+			manager.storeModElement(generatableElement);
+		}
+
+		mcreator.reloadWorkspaceTabContents();
+		RegenerateCodeAction.regenerateCode(mcreator, false, false);
+	}
+
+	private void processCodeElementForCreation(MCreator mcreator, ModElement modElement,
+			GeneratableElement generatableElement, String code) {
+		modElement.setCodeLock(true);
+		List<File> modElementFiles = mcreator.getGenerator().getModElementGeneratorTemplatesList(generatableElement)
+				.stream().map(GeneratorTemplate::getFile).toList();
+
+		CodeCleanup codeCleanup = new CodeCleanup();
+		code = codeCleanup.reformatTheCodeAndOrganiseImports(mcreator.getWorkspace(), code);
+		File modElementFile = modElementFiles.getFirst();
+
+		try {
+			Files.createDirectories(modElementFile.getParentFile().toPath());
+			Files.writeString(modElementFile.toPath(), code, StandardCharsets.UTF_8);
+		} catch (IOException ex) {
+			LOG.error("Failed to create code file", ex);
+		}
+	}
+
+	private JsonArray createJsonForElements(MCreator mcreator, List<IElement> elements) throws IOException {
+		JsonArray jsonElements = new JsonArray();
+
+		for (IElement element : elements) {
+			if (element instanceof ModElement modElement) {
+				jsonElements.add(createElementJson(mcreator, modElement));
+			}
+		}
+
+		return jsonElements;
+	}
+
+	private JsonObject createElementJson(MCreator mcreator, ModElement element) throws IOException {
+		JsonObject jsonObject = new JsonObject();
+		JsonObject elementContent = GSON.fromJson(mcreator.getWorkspace().getModElementManager()
+				.generatableElementToJSON(element.getGeneratableElement()), JsonObject.class);
+
+		jsonObject.add("name", new JsonPrimitive(element.getName()));
+
+		String type = element.getType().getRegistryName();
+		if (!elementContent.has("_type")) {
+			jsonObject.add("type", new JsonPrimitive(type));
+		}
+
+		if (List.of("code", "mixin").contains(type)) {
+			List<File> modElementFiles = mcreator.getGenerator()
+					.getModElementGeneratorTemplatesList(element.getGeneratableElement()).stream()
+					.map(GeneratorTemplate::getFile).toList();
+
+			String code = Files.readString(modElementFiles.getFirst().toPath());
+			jsonObject.add("code", new JsonPrimitive(ImportFormat.removeImports(code, "")));
+		}
+
+		jsonObject.add("content", new JsonPrimitive(JsonUtils.map(elementContent).toString()));
+		return JsonUtils.map(jsonObject);
+	}
+
+	private String compressToBase64(String data) throws IOException {
+		return Base64.getEncoder().encodeToString(JsonUtils.compress(data, JsonUtils.GZIP_ENCODE_UTF_8));
+	}
+
+	private void copyToClipboard(String data) {
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(data), null);
+	}
+
+	private void showPreview(Component parent, String... messages) {
+		StringBuilder preview = new StringBuilder();
+		for (String message : messages) {
+			if (preview.length() > 0) {
+				preview.append(": ");
+			}
+			preview.append(message.length() > PREVIEW_LENGTH ? message.substring(0, PREVIEW_LENGTH) + "...." : message);
+		}
+		JOptionPane.showMessageDialog(parent, preview.toString());
+	}
+
+	private void showError(Component parent, String message) {
+		JOptionPane.showMessageDialog(parent, message, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+
+	private void handleProcessingError(Component parent, Exception ex) {
+		showError(parent, "Processing error: " + ex.getMessage());
+		LOG.error("Processing error", ex);
 	}
 
 	public String getOrDefault(String key, String defaultValue) {
-		if (descMap.has(key)) {
-			return descMap.get(key).getAsString();
-		} else {
-			return defaultValue;
-		}
+		return descMap.has(key) ? descMap.get(key).getAsString() : defaultValue;
 	}
 }
