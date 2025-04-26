@@ -71,9 +71,7 @@ public class MixinPluginMain extends JavaPlugin{
 			register(mixinModElementType);
 		});
 
-        parent.addListener(WorkspaceBuildStartedEvent.class, a->{
-            MixinGUI.regenerateMixins(a.getMCreator().getWorkspace());
-        });
+        parent.addListener(WorkspaceBuildStartedEvent.class, a-> MixinGUI.regenerateMixins(a.getMCreator().getWorkspace()));
 
 		LOG.info("Mixins plugin was loaded");
 	}

@@ -6,6 +6,8 @@ import org.liquid.convenient.TransferMain;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -15,7 +17,52 @@ public abstract class JsonUtils {
     public static final String GZIP_ENCODE_UTF_8 = "UTF-8";
 
     public static boolean isRegularPack(JsonObject jsonObject){
-        return jsonObject.has("name") && jsonObject.has("type");
+        return jsonObject.has("name");
+    }
+
+    public static JsonObject map(JsonObject jsonObject){
+        var input = JsonUtils.class.getResourceAsStream("/dictionary/dic.txt");
+        Properties dic = new Properties();
+		try {
+            var original = new Properties();
+            original.load(input);
+            //create map
+            for (Map.Entry<Object,Object> entry:original.entrySet()){
+                dic.put(entry.getValue(),entry.getKey());
+            }
+
+            if (jsonObject.has("type")){
+                var type = jsonObject.get("type").getAsString();
+                jsonObject.addProperty("type",dic.getProperty(type,type).replace("types.",""));
+            }
+            if (jsonObject.has("_type")){
+                var type = jsonObject.get("_type").getAsString();
+                jsonObject.addProperty("_type",dic.getProperty(type,type).replace("types.",""));
+            }
+		} catch (IOException ignored) {
+		}
+        System.out.println(jsonObject.toString());
+        return jsonObject;
+	}
+
+    public static JsonObject unmap(JsonObject jsonObject){
+        var input = JsonUtils.class.getResourceAsStream("/dictionary/dic.txt");
+        Properties dic = new Properties();
+        try {
+            dic.load(input);
+
+            if (jsonObject.has("type")){
+                var type = jsonObject.get("type").getAsString();
+                jsonObject.addProperty("type",dic.getProperty("types."+type,type));
+            }
+            if (jsonObject.has("_type")){
+                var type = jsonObject.get("_type").getAsString();
+                jsonObject.addProperty("_type",dic.getProperty("types."+type,type));
+            }
+        } catch (IOException ignored) {
+        }
+        System.out.println(jsonObject.toString());
+        return jsonObject;
     }
 
     public static byte[] uncompress(byte[] bytes) throws IOException{
