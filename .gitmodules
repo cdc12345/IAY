@@ -1,0 +1,3 @@
+[submodule "FountainBase"]
+	path = FountainBase
+	url = git@github.com:cdc12345/FountainBase.git

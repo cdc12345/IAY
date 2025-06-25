@@ -83,7 +83,10 @@ public class ${name}Procedure {
 		</#list>
 
 		${procedurecode}
+		${tail}
 	}
+
+	${extra_templates_code}
 
 }
 

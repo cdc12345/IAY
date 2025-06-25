@@ -11,8 +11,8 @@ import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.action.impl.workspace.RegenerateCodeAction;
 import net.mcreator.ui.init.L10N;
+import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.IElement;
 import net.mcreator.workspace.elements.ModElement;
@@ -25,7 +25,9 @@ import org.liquid.convenient.utils.JsonUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,24 +53,26 @@ public class TransferMain extends JavaPlugin {
 	private void initializeMenu() {
 		this.addListener(MCreatorLoadedEvent.class, event -> {
 			MCreator mcreator = event.getMCreator();
-			JMenuBar bar = mcreator.getMainMenuBar();
+			if (mcreator instanceof ModMaker) {
+				JMenuBar bar = mcreator.getMainMenuBar();
 
-			JMenu transfer = new JMenu("Transfer");
+				JMenu transfer = new JMenu("Transfer");
 
-			// Copy operations
-			transfer.add(buildShallowCopyMenu(mcreator));
-			transfer.add(buildSelectToReplace(mcreator));
-			transfer.addSeparator();
-			transfer.add(buildDeepCopyMenu(mcreator));
-			transfer.add(buildUnpackMenu(mcreator));
-			transfer.addSeparator();
+				// Copy operations
+				transfer.add(buildShallowCopyMenu(mcreator));
+				transfer.add(buildSelectToReplace(mcreator));
+				transfer.addSeparator();
+				transfer.add(buildDeepCopyMenu(mcreator));
+				transfer.add(buildUnpackMenu(mcreator));
+				transfer.addSeparator();
 
-			// Comment and language operations
-			transfer.add(buildAddCommentMenu(mcreator));
-			transfer.add(buildLanguageMenu(mcreator, false));
-			transfer.add(buildLanguageMenu(mcreator, true));
+				// Comment and language operations
+				transfer.add(buildAddCommentMenu(mcreator));
+				transfer.add(buildLanguageMenu(mcreator, false));
+				transfer.add(buildLanguageMenu(mcreator, true));
 
-			bar.add(transfer);
+				bar.add(transfer);
+			}
 		});
 	}
 
@@ -147,7 +151,7 @@ public class TransferMain extends JavaPlugin {
 					return;
 				}
 
-				processElementReplacement(mcreator, element, elements.get(0).getAsJsonObject());
+				processElementReplacement(mcreator, element, JsonUtils.unmap(elements.get(0).getAsJsonObject()));
 			} catch (Exception ex) {
 				handleProcessingError(workspacePanel, ex);
 			}
@@ -211,9 +215,10 @@ public class TransferMain extends JavaPlugin {
 				}
 
 				JsonArray result = new JsonArray();
-				result.add(JsonUtils.map(GSON.fromJson(json, JsonObject.class)));
+				var preview = GSON.fromJson(json, JsonObject.class);
+				result.add(JsonUtils.map(preview));
 
-				showPreview(workspacePanel, element.getName(), result.toString());
+				showPreview(workspacePanel, element.getName(), preview.toString());
 				copyToClipboard(compressToBase64(result.toString()));
 				LOG.info("{}:{}", element.getName(), result);
 			} catch (Exception ex) {
@@ -297,7 +302,7 @@ public class TransferMain extends JavaPlugin {
 
 	private JsonArray parseInputToJsonArray(String input) throws IOException {
 		byte[] raw = Base64.getDecoder().decode(input.getBytes(StandardCharsets.UTF_8));
-		String json = new String(JsonUtils.uncompress(raw));
+		String json = JsonUtils.uncompress(raw);
 
 		try {
 			return GSON.fromJson(json, JsonArray.class);
@@ -358,29 +363,30 @@ public class TransferMain extends JavaPlugin {
 		for (JsonElement jsonElement : jsonElements) {
 			JsonObject object = JsonUtils.unmap(jsonElement.getAsJsonObject());
 			JsonObject elementJson = JsonUtils.unmap(
-					GSON.fromJson(object.get("content").getAsString(), JsonObject.class));
+					GSON.fromJson(object.has("content")?object.get("content").getAsString():object.get(JsonUtils.CONTENT).getAsString(), JsonObject.class));
 
 			if (!JsonUtils.isRegularPack(object)) {
 				LOG.warn("Invalid Element: {}", object);
 				continue;
 			}
 
-			String name = object.get("name").getAsString();
+			String name = object.has("name")?object.get("name").getAsString():object.get(JsonUtils.NAME).getAsString();
 			String type = object.has("type") ?
 					object.get("type").getAsString() :
 					elementJson.get("_type").getAsString();
 
+			var type1 = ModElementTypeLoader.getModElementType(type);
 			ModElement modElement = new ModElement(mcreator.getWorkspace(), name,
-					ModElementTypeLoader.getModElementType(type));
+					type1);
 
 			GeneratableElement generatableElement = manager.fromJSONtoGeneratableElement(elementJson.toString(),
 					modElement);
 
-			if (object.has("code")) {
+			if (object.has("code") || object.has(JsonUtils.CODE)) {
 				generatableElement =
 						generatableElement != null ? generatableElement : modElement.getGeneratableElement();
-				processCodeElementForCreation(mcreator, modElement, generatableElement,
-						object.get("code").getAsString());
+				processCodeElementForCreation(mcreator, modElement, generatableElement, object.has("code")?
+						object.get("code").getAsString():object.get(JsonUtils.CODE).getAsString());
 			}
 
 			if (generatableElement == null) {
@@ -391,10 +397,16 @@ public class TransferMain extends JavaPlugin {
 			mcreator.getWorkspace().addModElement(modElement);
 			generatableElement.setModElement(modElement);
 			manager.storeModElement(generatableElement);
+
+			if (mcreator instanceof ModMaker modMaker){
+				modMaker.getWorkspacePanel().editCurrentlySelectedModElement(modElement,modMaker.getWorkspacePanel().list,0,0);
+			}
 		}
 
 		mcreator.reloadWorkspaceTabContents();
-		RegenerateCodeAction.regenerateCode(mcreator, false, false);
+//		RegenerateCodeAction.regenerateCode(mcreator, false, false);
+
+
 	}
 
 	private void processCodeElementForCreation(MCreator mcreator, ModElement modElement,
@@ -432,7 +444,7 @@ public class TransferMain extends JavaPlugin {
 		JsonObject elementContent = GSON.fromJson(mcreator.getWorkspace().getModElementManager()
 				.generatableElementToJSON(element.getGeneratableElement()), JsonObject.class);
 
-		jsonObject.add("name", new JsonPrimitive(element.getName()));
+		jsonObject.add(JsonUtils.NAME, new JsonPrimitive(element.getName()));
 
 		String type = element.getType().getRegistryName();
 		if (!elementContent.has("_type")) {
@@ -445,10 +457,10 @@ public class TransferMain extends JavaPlugin {
 					.map(GeneratorTemplate::getFile).toList();
 
 			String code = Files.readString(modElementFiles.getFirst().toPath());
-			jsonObject.add("code", new JsonPrimitive(ImportFormat.removeImports(code, "")));
+			jsonObject.add(JsonUtils.CODE, new JsonPrimitive(ImportFormat.removeImports(code, "")));
 		}
 
-		jsonObject.add("content", new JsonPrimitive(JsonUtils.map(elementContent).toString()));
+		jsonObject.add(JsonUtils.CONTENT, new JsonPrimitive(JsonUtils.map(elementContent).toString()));
 		return JsonUtils.map(jsonObject);
 	}
 
@@ -463,7 +475,7 @@ public class TransferMain extends JavaPlugin {
 	private void showPreview(Component parent, String... messages) {
 		StringBuilder preview = new StringBuilder();
 		for (String message : messages) {
-			if (preview.length() > 0) {
+			if (!preview.isEmpty()) {
 				preview.append(": ");
 			}
 			preview.append(message.length() > PREVIEW_LENGTH ? message.substring(0, PREVIEW_LENGTH) + "...." : message);

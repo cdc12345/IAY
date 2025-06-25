@@ -14,5 +14,5 @@ include 'ConvenientTransfer'
 include 'DataGen'
 
 include ":Fountain"
-project(":Fountain").projectDir = file(fountain_path)
+project(":Fountain").projectDir = file("FountainBase")
 

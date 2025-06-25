@@ -12,9 +12,9 @@
       "testValue": "NEUTRAL"
     }
   ],
-  "output": "String",
+  "output": "Boolean",
   "inputsInline": true,
-  "colour": "%{BKY_TEXTS_HUE}",
+  "colour": "%{BKY_LOGIC_HUE}",
   "mcreator": {
     "toolbox_id": "entitydata",
     "group": "name",

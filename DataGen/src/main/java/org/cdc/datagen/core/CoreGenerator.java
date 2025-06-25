@@ -7,14 +7,16 @@ import org.cdc.framework.utils.*;
 public class CoreGenerator {
 
     public static void main(String[] args) {
+        Object o = null;
+
         MCreatorPluginFactory pluginFactory = MCreatorPluginFactory.createFactory("Core/src/main/resources");
 
         LanguageBuilder en = pluginFactory.createDefaultLanguage();
 
         pluginFactory.createDataList().setName("effect_categories").appendElement("BENEFICIAL").appendElement("HARMFUL").appendElement("NEUTRAL").initGenerator().buildAndOutput();
 
-        pluginFactory.createProcedure("effect_get_category").setOutput(BuiltInTypes.String).setInputsInline(true)
-                .setColor(BuiltInBlocklyColor.TEXTS.toString()).appendArgs0InputValue("key","Object")
+        pluginFactory.createProcedure("effect_get_category").setOutput(BuiltInTypes.Boolean).setInputsInline(true)
+                .setColor(BuiltInBlocklyColor.LOGIC.toString()).appendArgs0InputValue("key","Object")
                 .setCategory("entitydata").setGroup("name").appendArgs0FieldDataListSelector("value","effect_categories","NEUTRAL").initGenerator().buildAndOutput();
 
         pluginFactory.createProcedure("entity_get_invulnerabletime").setOutput(BuiltInTypes.Number).setInputsInline(true)

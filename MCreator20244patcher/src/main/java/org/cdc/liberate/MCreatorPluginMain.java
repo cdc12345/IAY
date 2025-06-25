@@ -37,7 +37,7 @@ public class MCreatorPluginMain extends JavaPlugin {
                             Path mcreatorBat = Path.of(MetaData.LAUNCHER_FILE_NAME);
                             Path mcreatorABat = Path.of(MetaData.PURE_LAUNCHER_FILE_NAME);
                             Files.copy(Objects.requireNonNull(PluginLoader.INSTANCE.getResourceAsStream(MetaData.PURE_LAUNCHER_FILE_NAME)), mcreatorABat, StandardCopyOption.REPLACE_EXISTING);
-                            Files.copy(Objects.requireNonNull(PluginLoader.INSTANCE.getResourceAsStream(MetaData.CONFIGURATION_FILE_NAME)), mcreatorBat, StandardCopyOption.REPLACE_EXISTING);
+                            Files.copy(Objects.requireNonNull(PluginLoader.INSTANCE.getResourceAsStream(MetaData.LAUNCHER_FILE_NAME)), mcreatorBat, StandardCopyOption.REPLACE_EXISTING);
                             //Files.copy(plugin.getFile().toPath(),Path.of("agent.jar"), StandardCopyOption.REPLACE_EXISTING);
                             Path configFile = Path.of(MetaData.CONFIGURATION_FILE_NAME);
                             if (!Files.exists(configFile))

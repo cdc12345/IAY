@@ -1,13 +1,5 @@
 <#include "mcelements.ftl">
+<@addTemplate file="utils/energy/energy_get_max.java.ftl"/>
 <#-- @formatter:off -->
-/*@int*/(new Object(){
-	public int getMaxEnergyStored(LevelAccessor level, BlockPos pos) {
-		AtomicInteger _retval = new AtomicInteger(0);
-		BlockEntity _ent = level.getBlockEntity(pos);
-		if (_ent != null)
-			_ent.getCapability(ForgeCapabilities.ENERGY, ${input$direction}).ifPresent(capability ->
-				_retval.set(capability.getMaxEnergyStored()));
-		return _retval.get();
-	}
-}.getMaxEnergyStored(world, ${toBlockPos(input$x,input$y,input$z)}))
+/*@int*/(getMaxEnergyStored(world, ${toBlockPos(input$x,input$y,input$z)},${input$direction}))
 <#-- @formatter:on -->

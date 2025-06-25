@@ -1,4 +1,8 @@
-if(${input$entity} instanceof Player _player) {
+<@definePart type="head">
+if (${input$entity} instanceof Player _player) {
+</@definePart>
     _player.getAbilities().mayfly = ${input$condition};
+<@definePart type="tail">
     _player.onUpdateAbilities();
 }
+</@definePart>
