@@ -1,2 +1,0 @@
-RecipeManager recipeManager${cbi};
-(recipeManager${cbi} = ((Level) world).getRecipeManager()).replaceRecipes(recipeManager${cbi}.getRecipes().stream().filter(a -> !a.getId().getNamespace().equals(${input$namespace})).toList());

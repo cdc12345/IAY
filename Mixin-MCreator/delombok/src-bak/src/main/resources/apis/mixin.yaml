@@ -1,9 +1,0 @@
----
-neoforge-1.21.1:
-  update_files:
-    - ~
-forge-1.20.1:
-  update_files:
-    - ~
-
-name: "mixin"

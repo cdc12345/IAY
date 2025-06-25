@@ -1,1 +1,0 @@
-((Level)world).getRecipeManager().replaceRecipes(List.of());

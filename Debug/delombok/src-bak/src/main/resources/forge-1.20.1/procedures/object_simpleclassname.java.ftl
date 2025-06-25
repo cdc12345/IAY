@@ -1,1 +1,0 @@
-(${input$object}.getClass().getSimpleName())

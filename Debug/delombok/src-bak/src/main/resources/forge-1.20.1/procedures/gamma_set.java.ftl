@@ -1,1 +1,0 @@
-Minecraft.getInstance().options.gamma().set(${input$value});

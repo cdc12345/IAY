@@ -1,1 +1,0 @@
-(Arrays.stream(Thread.currentThread().getStackTrace()).map(StackTraceElement::getMethodName).toList())

@@ -1,1 +1,0 @@
-(${input$object} instanceof ${input$type})
