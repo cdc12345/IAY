@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ConvenientTransfer/IAmYou.ConvenientTransfer.iml" filepath="$PROJECT_DIR$/.idea/modules/ConvenientTransfer/IAmYou.ConvenientTransfer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core/IAmYou.Core.iml" filepath="$PROJECT_DIR$/.idea/modules/Core/IAmYou.Core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DataGen/IAmYou.DataGen.main.iml" filepath="$PROJECT_DIR$/.idea/modules/DataGen/IAmYou.DataGen.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DataGen/IAmYou.DataGen.test.iml" filepath="$PROJECT_DIR$/.idea/modules/DataGen/IAmYou.DataGen.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Debug/IAmYou.Debug.iml" filepath="$PROJECT_DIR$/.idea/modules/Debug/IAmYou.Debug.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/JavaHomeEditor/IAmYou.JavaHomeEditor.iml" filepath="$PROJECT_DIR$/.idea/modules/JavaHomeEditor/IAmYou.JavaHomeEditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Mixin-MCreator/IAmYou.Mixin-MCreator.iml" filepath="$PROJECT_DIR$/.idea/modules/Mixin-MCreator/IAmYou.Mixin-MCreator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/generator-1.20.1/IAmYou.generator-1.20.1.iml" filepath="$PROJECT_DIR$/.idea/modules/generator-1.20.1/IAmYou.generator-1.20.1.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/IAmYou.main.iml" filepath="$PROJECT_DIR$/.idea/modules/IAmYou.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo-plugin.iml" filepath="$PROJECT_DIR$/demo-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/miao.main.iml" filepath="$PROJECT_DIR$/.idea/modules/miao.main.iml" />

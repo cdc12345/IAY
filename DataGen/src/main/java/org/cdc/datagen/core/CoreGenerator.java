@@ -7,7 +7,6 @@ import org.cdc.framework.utils.*;
 public class CoreGenerator {
 
     public static void main(String[] args) {
-        Object o = null;
 
         MCreatorPluginFactory pluginFactory = MCreatorPluginFactory.createFactory("Core/src/main/resources");
 
