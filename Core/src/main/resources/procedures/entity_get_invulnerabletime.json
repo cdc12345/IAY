@@ -14,6 +14,7 @@
       "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>"
     ],
     "toolbox_id": "entitydata",
+    "group": "name",
     "inputs": [
       "entity"
     ]

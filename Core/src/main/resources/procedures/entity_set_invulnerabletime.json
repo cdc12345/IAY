@@ -11,10 +11,10 @@
       "check": "Number"
     }
   ],
+  "colour": "%{BKY_TEXTS_HUE}",
   "previousStatement": null,
   "nextStatement": null,
   "inputsInline": true,
-  "colour": "%{BKY_TEXTS_HUE}",
   "mcreator": {
     "group": "name",
     "toolbox_init": [
