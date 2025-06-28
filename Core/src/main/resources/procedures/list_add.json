@@ -7,8 +7,7 @@
     },
     {
       "type": "input_value",
-      "name": "value",
-      "check": "String"
+      "name": "value"
     }
   ],
   "inputsInline": true,

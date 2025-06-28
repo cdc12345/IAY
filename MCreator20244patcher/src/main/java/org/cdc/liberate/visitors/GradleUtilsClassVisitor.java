@@ -4,7 +4,6 @@ import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import net.mcreator.workspace.Workspace;
 import org.cdc.liberate.events.LiberateEvent;
 import org.cdc.liberate.events.workspace.GradleJavaHomeSetEvent;
 import org.cdc.liberate.events.workspace.GradleProcessCreatedEvent;
@@ -17,6 +16,7 @@ public class GradleUtilsClassVisitor extends ClassVisitor {
     public GradleUtilsClassVisitor() {
         super(2);
         visitors.add(new MethodsVisitor());
+
     }
 
     @Override
