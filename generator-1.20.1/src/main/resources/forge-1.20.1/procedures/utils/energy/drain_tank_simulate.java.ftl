@@ -1,4 +1,4 @@
-public static int drainTankSimulate(LevelAccessor level, BlockPos pos, int amount, Direction direction) {
+private static int drainTankSimulate(LevelAccessor level, BlockPos pos, int amount, Direction direction) {
 	AtomicInteger _retval = new AtomicInteger(0);
 	BlockEntity _ent = level.getBlockEntity(pos);
 	if (_ent != null)

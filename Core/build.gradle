@@ -47,6 +47,7 @@ processResources {
     }
 }
 
+
 tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
     dependsOn(test)
     archiveFileName.set("Main.zip")
