@@ -30,7 +30,6 @@ import org.w3c.dom.Element;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BlocklyBlockCodeGenerator {
@@ -443,7 +442,7 @@ public class BlocklyBlockCodeGenerator {
 
 		if (templateGenerator != null) {
 			dataModel.put("cbi", customBlockIndex);
-			dataModel.put("addTemplate",new ExtraTemplatesLinker(master));
+			dataModel.put("addTemplate", new ExtraTemplatesLinker(master));
 			AtomicReference<String> head = new AtomicReference<>("");
 			AtomicReference<String> tail = new AtomicReference<>("");
 			dataModel.put("definePart", new PartLinker(head, tail));
